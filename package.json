@@ -1,0 +1,38 @@
+{
+  "name": "job-application-tracker",
+  "version": "1.0.0",
+  "description": "A job application tracking system",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "concurrently \"webpack --mode development --watch\" \"nodemon app.js\"",
+    "build": "webpack --mode production"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.775.0",
+    "@aws-sdk/s3-request-presigner": "^3.775.0",
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.3",
+    "express-session": "^1.18.0",
+    "mongoose": "^8.2.1",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-react": "^7.23.3",
+    "babel-loader": "^9.1.3",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  }
+}
