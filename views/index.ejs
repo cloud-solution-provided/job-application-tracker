@@ -1,0 +1,173 @@
+<%- include('partials/header') %>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="action-buttons">
+                <button class="btn btn-primary mb-2 w-100" data-bs-toggle="modal" data-bs-target="#uploadResumeModal">
+                    Upload Resume
+                </button>
+                <button class="btn btn-secondary mb-2 w-100" data-bs-toggle="modal" data-bs-target="#pasteJDModal">
+                    Paste JD
+                </button>
+                <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addApplicationModal">
+                    Add Application
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Applications</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title / Company</th>
+                                    <th>Resume</th>
+                                    <th>Job Description</th>
+                                    <th>Status</th>
+                                    <th>Match %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% applications.forEach(app => { %>
+                                    <tr>
+                                        <td><%= app.id %></td>
+                                        <td>
+                                            <strong><%= app.title %></strong><br>
+                                            <small class="text-muted"><%= app.company %></small>
+                                        </td>
+                                        <td>
+                                            <% if (app.resume && app.resume.fileUrl) { %>
+                                                <a href="<%= app.resume.fileUrl %>" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
+                                            <% } else { %>
+                                                <span class="text-muted">No resume</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <div class="job-description-preview">
+                                                <%= app.jobDescription.substring(0, 100) %>...
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form action="/update-status/<%= app.id %>" method="POST" class="d-inline">
+                                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                    <option value="Applied" <%= app.status === 'Applied' ? 'selected' : '' %>>Applied</option>
+                                                    <option value="Not Selected" <%= app.status === 'Not Selected' ? 'selected' : '' %>>Not Selected</option>
+                                                    <option value="Selected" <%= app.status === 'Selected' ? 'selected' : '' %>>Selected</option>
+                                                </select>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: <%- app.matchPercentage %>%" 
+                                                     aria-valuenow="<%- app.matchPercentage %>" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    <%- app.matchPercentage %>%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Resume Modal -->
+<div class="modal fade" id="uploadResumeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Resume</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/upload-resume" method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <div class="drop-zone mb-3">
+                        <div class="drop-zone-content">
+                            <p>Drag and drop your resume here or click to browse</p>
+                            <input type="file" name="resume" id="resumeInput" class="d-none" accept=".pdf,.doc,.docx">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Application Modal -->
+<div class="modal fade" id="addApplicationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add-application" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Job Title</label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Company</label>
+                        <input type="text" name="company" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Resume</label>
+                        <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Job Description</label>
+                        <textarea name="jobDescription" class="form-control" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select" required>
+                            <option value="Applied">Applied</option>
+                            <option value="Not Selected">Not Selected</option>
+                            <option value="Selected">Selected</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Application</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Paste JD Modal -->
+<div class="modal fade" id="pasteJDModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Paste Job Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add-application" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Job Description</label>
+                        <textarea name="jobDescription" class="form-control" rows="6" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %> 
